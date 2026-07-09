@@ -13,17 +13,19 @@ class RunAfterSpiderClosed:
 
         spider.driver01.quit()
         spider.driver02.quit()
+        spider.driver03.quit()
 
-        #对获取的所有小说转化为EPUB书籍
-        subprocess.run(
-            [
-                "python",
-                "bili_novel/final_processing/TXTSaveEPUB.py",
-                spider.novel_name,
-                spider.novel_author,
-                spider.EPUB_cover_mode
-            ]
-        )
+        if spider.EPUB_cover_mode:
+            #对获取的所有小说转化为EPUB书籍
+            subprocess.run(
+                [
+                    "python",
+                    "bili_novel/final_processing/TXTSaveEPUB.py",
+                    spider.novel_name,
+                    spider.novel_author,
+                    spider.EPUB_cover_mode
+                ]
+            )
 
         spider.logger.info("---------scrapy爬虫执行完毕---------")
 

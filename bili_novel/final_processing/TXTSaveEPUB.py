@@ -103,18 +103,21 @@ class SaveEPUB:
         # 存储在EPUB中的封面图片的名称
         cover_name = f"{novel_title}.jpg"
         EPUB_cover_path = self.set_cover(EPUB_cover_mode, novel_name, novel_title)
-        with open(EPUB_cover_path, "rb") as f:
-            img = f.read()
-        self.book.set_cover(cover_name, img)
-        #--设置EPUB书籍的信息
-        #EPUB书籍的ID号
-        self.book.set_identifier(ID)
-        #书名
-        self.book.set_title(novel_title)
-        #语言
-        self.book.set_language("zh-CN")
-        #作者
-        self.book.add_author(novel_author)
+        try:
+            with open(EPUB_cover_path, "rb") as f:
+                img = f.read()
+            self.book.set_cover(cover_name, img)
+            # --设置EPUB书籍的信息
+            # EPUB书籍的ID号
+            self.book.set_identifier(ID)
+            # 书名
+            self.book.set_title(novel_title)
+            # 语言
+            self.book.set_language("zh-CN")
+            # 作者
+            self.book.add_author(novel_author)
+        except TypeError:
+            print("===无插图章节，无法生成封面===")
 
     # --创建章节
     def create_chapter(self,chapter_name:str):
@@ -180,7 +183,7 @@ class SaveEPUB:
             if EPUB_cover_mode == "illustration":
                 path = f"imgs/{novel_name}/{novel_title}"
                 for d in os.listdir(path):
-                    if re.match("插图_\d+",d):
+                    if re.match("插图_\\d+",d):
                         name_min = 1
                         for t_min in os.listdir(path + "/" + d):
                             new = int(t_min.split(".")[0])
@@ -222,4 +225,3 @@ if __name__ == '__main__':
 
     #备用方案
     # save_epub.saveEPUB("书名","书本作者名","illustration")
-

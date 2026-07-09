@@ -18,16 +18,16 @@ USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTM
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = False
 
-#scrapy允许下载/处理的请求数量
-CONCURRENT_REQUESTS = 16
+#scrapy允许的请求数量
+CONCURRENT_REQUESTS = 2
 #同一域名下允许的请求执行数量
-CONCURRENT_REQUESTS_PER_DOMAIN = 16
+CONCURRENT_REQUESTS_PER_DOMAIN = 2
 
 # Configure a delay for requests for the same website (default: 0)
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-DOWNLOAD_DELAY = 3
-RANDOMIZE_DOWNLOAD_DELAY = True
+# DOWNLOAD_DELAY = 3
+# RANDOMIZE_DOWNLOAD_DELAY = True
 # The download delay setting will honor only one of:
 
 #CONCURRENT_REQUESTS_PER_IP = 16
@@ -52,9 +52,9 @@ RANDOMIZE_DOWNLOAD_DELAY = True
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
-#DOWNLOADER_MIDDLEWARES = {
-#    "bili_novel.middlewares.BiliNovelDownloaderMiddleware": 543,
-#}
+DOWNLOADER_MIDDLEWARES = {
+   "bili_novel.middlewares.BiliNovelDownloaderMiddleware": 543,
+}
 
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
@@ -65,7 +65,7 @@ RANDOMIZE_DOWNLOAD_DELAY = True
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-   "bili_novel.pipelines.BiliNovelOriginalDataSaveTXTPipeline": 300,
+   "bili_novel.pipelines.BiliNovelOriginalDataSavePipeline": 300,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
@@ -115,4 +115,5 @@ DUPEFILTER_CLASS = "scrapy.dupefilters.BaseDupeFilter"
 EXTENSIONS = {
    "bili_novel.extensions.RunAfterSpiderClosed": 400,
 }
+
 

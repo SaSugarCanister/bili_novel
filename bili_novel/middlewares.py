@@ -1,19 +1,14 @@
-# Define here the models for your spider middleware
-#
-# See documentation in:
-# https://docs.scrapy.org/en/latest/topics/spider-middleware.html
-
 from scrapy import signals
-
-# useful for handling different item types with a single interface
-from itemadapter import is_item, ItemAdapter
-
+from twisted.internet import threads
+from bili_novel.get_novel_defs.waitEle import waitEle
+from bili_novel.get_novel_defs.log_config import config
+from bili_novel.get_novel_defs.requests_url import requests_url
+from bili_novel.get_novel_defs.responses_url import responses_url
+from bili_novel.get_novel_defs.get_text import get_text
+import time
+import random
 
 class BiliNovelSpiderMiddleware:
-    # Not all methods need to be defined. If a method is not defined,
-    # scrapy acts as if the spider middleware does not modify the
-    # passed objects.
-
     @classmethod
     def from_crawler(cls, crawler):
         # This method is used by Scrapy to create your spiders.
@@ -68,25 +63,43 @@ class BiliNovelDownloaderMiddleware:
         crawler.signals.connect(s.spider_opened, signal=signals.spider_opened)
         return s
 
-    def process_request(self, request, spider):
-        # Called for each request that goes through the downloader
-        # middleware.
+    def __init__(self):
+        self.waitEle = waitEle()
+        self.requests_url = requests_url()
+        self.responses_url = responses_url()
+        self.get_text = get_text()
+        config().silence_selenium()
 
-        # Must either:
-        # - return None: continue processing this request
-        # - or return a Response object
-        # - or return a Request object
-        # - or raise IgnoreRequest: process_exception() methods of
-        #   installed downloader middleware will be called
-        return None
+    def process_request(self, request, spider):
+        q = request.meta.get("q")
+        logger = request.meta.get("logger")
+        chapter_dir_path = request.meta.get("chapter_dir_path")
+        flag = request.meta.get("flag")
+        next_flag = request.meta.get("next_flag")
+        page_num = request.meta.get("page_num")
+        imgs_url = request.meta.get("imgs_url")
+        start_url = request.meta.get("start_url")
+        origin_chapter_url = request.meta.get("origin_chapter_url")
+        url = request.url
+        d = ""
+        driver = ""
+        if not (q is None):
+            driver = q.get()
+
+        time.sleep(random.uniform(0.5, 3))
+
+        if flag == "novel_url":
+            d = threads.deferToThread(self.requests_url.request_novel,driver=driver,url=url)
+            d.addCallback(self.responses_url.response_novel,request=request,driver=driver,q=q,url=url)
+        elif flag == "chapter_url":
+            d = threads.deferToThread(self.requests_url.request_chapter,driver=driver,url=url,logger=logger)
+            d.addCallback(self.responses_url.response_chapter,next_flag=next_flag,request=request,driver=driver,logger=logger,chapter_dir_path=chapter_dir_path,page_num=page_num,imgs_url=imgs_url,origin_chapter_url=origin_chapter_url,q=q)
+        elif flag == "img_url":
+            d = threads.deferToThread(self.requests_url.request_img,img_url=url,start_url=start_url)
+            d.addCallback(self.responses_url.response_img,request=request,img_url=url)
+        return d
 
     def process_response(self, request, response, spider):
-        # Called with the response returned from the downloader.
-
-        # Must either;
-        # - return a Response object
-        # - return a Request object
-        # - or raise IgnoreRequest
         return response
 
     def process_exception(self, request, exception, spider):
@@ -101,3 +114,5 @@ class BiliNovelDownloaderMiddleware:
 
     def spider_opened(self, spider):
         spider.logger.info("Spider opened: %s" % spider.name)
+
+

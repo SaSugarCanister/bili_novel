@@ -20,7 +20,7 @@ class GetNovelSpider(scrapy.Spider):
     ]
     start_urls = ["https://www.linovelib.com"]
     # 小说编号 若想爬取其它小说，就在此处传入相应url片段
-    novel_index = "/novel/9.html"
+    novel_index = "/novel/XXX.html"
 
     #--通过 -a 关键字，定义EPUB书籍的封面设置方式
     # "illustration"：通过从“插图”文件夹中找到命名数字最小的那张图作为封面

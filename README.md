@@ -1,4 +1,4 @@
-# 哔哩轻小说获取小说，并转为EPUB
+# 哔哩轻小说 → EPUB 电子书
 
 [![License](https://img.shields.io/badge/license-MIT-red.svg)](https://github.com/SaSugarCanister/bili_novel/blob/main/LICENSE)
 
